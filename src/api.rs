@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display};
 
 const BASE_URL: &str = "https://data.hisparc.nl/api/";
 
@@ -255,30 +255,26 @@ pub fn get_stations_in_subcluster(subcluster_number: u32) -> Result<Vec<NameNumb
     Ok(stations)
 }
 
-// TODO: Fix return type
-pub fn get_event_trace(station_number: u32, ext_timestamp: u32) -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_event_trace(station_number: u64, ext_timestamp: u64) -> Result<Vec<Vec<u32>>, Box<dyn std::error::Error>> {
     let mut substitions = HashMap::new();
     substitions.insert("station_number".to_string(), station_number);
     substitions.insert("ext_timestamp".to_string(), ext_timestamp);
 
     let url = substitute_variables_with_numbers(get_api_urls()?.get("event_trace").unwrap(), substitions)?;
-    let stations = reqwest::blocking::get(url)?.json::<Vec<NameNumber>>()?;
+    let stations = reqwest::blocking::get(url)?.json::<Vec<Vec<u32>>>()?;
     Ok(stations)
 }
 
-// TODO: Fix return type
 pub fn get_stations() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
     let stations = reqwest::blocking::get(get_api_urls()?.get("stations").unwrap())?.json::<Vec<NameNumber>>()?;
     Ok(stations)
 }
 
-// TODO: Fix return type
 pub fn get_countries() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
     let stations = reqwest::blocking::get(get_api_urls()?.get("countries").unwrap())?.json::<Vec<NameNumber>>()?;
     Ok(stations)
 }
 
-// TODO: Fix return type
 pub fn get_stations_with_weather(year: u32, month: u32, day: u32) -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
     let mut substitions = HashMap::new();
     substitions.insert("year".to_string(), year);
@@ -290,13 +286,12 @@ pub fn get_stations_with_weather(year: u32, month: u32, day: u32) -> Result<Vec<
     Ok(stations)
 }
 
-// TODO: Fix return type
 pub fn get_subclusters() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
     let stations = reqwest::blocking::get(get_api_urls()?.get("subclusters").unwrap())?.json::<Vec<NameNumber>>()?;
     Ok(stations)
 }
 
-fn substitute_variables_with_numbers(input_str: &String, substitions: HashMap<String, u32>) -> Result<String, Box<dyn std::error::Error>> {
+fn substitute_variables_with_numbers<T: Display>(input_str: &String, substitions: HashMap<String, T>) -> Result<String, Box<dyn std::error::Error>> {
     let split: Vec<&str> = input_str.split(|c| c == '{' || c == '}').collect();
 
     let mut output: Vec<String> = Vec::new();

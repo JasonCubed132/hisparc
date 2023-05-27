@@ -7,9 +7,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // println!("{:#?}", api_urls.get("has_data").unwrap());
 
-    // let stations = get_stations()?;
-    // println!("{:#?}", stations[0]);
-
     // let station_info = get_station_info(4, 2023, 5, 23)?;
     // println!("{:#?}", station_info);
 
@@ -19,8 +16,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // let has_singles = get_has_singles(14006, 2023, 5, 23)?;
     // println!("{:#?}", has_singles);
 
-    // let subclusters = get_subclusters_in_cluster(1000)?;
-    // println!("{:#?}", subclusters);
+    // let subclusters_in_cluster = get_subclusters_in_cluster(1000)?;
+    // println!("{:#?}", subclusters_in_cluster);
 
     // let config = get_configuration(14006, 2023, 5, 23)?;
     // println!("{:#?}", config);
@@ -42,6 +39,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // let stations_in_subcluster = get_stations_in_subcluster(0)?;
     // println!("{:#?}", stations_in_subcluster);
+
+    // let trace = get_event_trace(14006, 1684281600169056956)?;
+    // println!("{:#?}", trace);
+
+    // let stations = get_stations()?;
+    // println!("{:#?}", stations[0]);
+
+    // let countries = get_countries()?;
+    // println!("{:#?}", countries);
+
+    // let stations_with_weather = get_stations_with_weather(2023, 5, 23)?;
+    // println!("{:#?}", stations_with_weather[0]);
+
+    // let subclusters = get_subclusters()?;
+    // println!("{:#?}", subclusters);
 
     Ok(())
 }
