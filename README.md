@@ -21,3 +21,4 @@ Datetime outputs: `YYYY-MM-DD HH-MM-SS`
 
 Download page is here: `https://data.hisparc.nl/data/download/`
 - Source appears to send a get request based on the contents of the form but Firefox's network debugger doesn't show anything.
+- This uses URLs of the form: `https://data.hisparc.nl/data/download/?data_type=events&station_events=197&station_weather=&lightning_type=4&station_singles=&start=2023-5-17&end=2023-5-20&download=on` which *may* be easier to process, needs exploring.
