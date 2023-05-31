@@ -284,7 +284,7 @@ pub fn get_subclusters() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> 
 }
 
 fn substitute_variables_with_numbers<T: Display>(
-    input_str: &String,
+    input_str: &str,
     substitions: HashMap<String, T>,
 ) -> Result<String, Box<dyn std::error::Error>> {
     let split: Vec<&str> = input_str.split(|c| c == '{' || c == '}').collect();
@@ -297,7 +297,7 @@ fn substitute_variables_with_numbers<T: Display>(
             match substitions.get(item) {
                 Some(a) => {
                     let str_num = a.to_string();
-                    output.push(String::from(str_num));
+                    output.push(str_num);
                 }
                 None => return Err(format!("Could not find {item} in substitutions").into()),
             }
