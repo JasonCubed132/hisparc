@@ -1,4 +1,5 @@
 use hisparc::api::*;
+use hisparc::data::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_urls = get_api_urls()?;
@@ -7,8 +8,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // println!("{:#?}", api_urls.get("has_data").unwrap());
 
-    // let station_info = get_station_info(4, 2023, 5, 23)?;
-    // println!("{:#?}", station_info);
+    let station_info = get_station_info(4, 2023, 5, 23)?;
+    println!("{:#?}", station_info);
 
     // let stations_with_data = get_stations_with_data(2023, 5, 23)?;
     // println!("{:#?}", stations_with_data);
@@ -54,6 +55,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // let subclusters = get_subclusters()?;
     // println!("{:#?}", subclusters);
+
+    get_event_data(197)?;
 
     Ok(())
 }
