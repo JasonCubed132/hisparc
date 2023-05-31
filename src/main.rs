@@ -1,5 +1,7 @@
+use anyhow::Context;
 use hisparc::api::*;
 use hisparc::data::*;
+use chrono::prelude::NaiveDateTime;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_urls = get_api_urls()?;
@@ -56,7 +58,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // let subclusters = get_subclusters()?;
     // println!("{:#?}", subclusters);
 
-    get_event_data(197)?;
+    let start_naive = NaiveDateTime::parse_from_str("2023-5-17 00:00:00", "%Y-%m-%d %H:%M:%S").context("Start")?;
+    let end_naive = NaiveDateTime::parse_from_str("2023-5-17 00:05:00", "%Y-%m-%d %H:%M:%S").context("End")?;
+
+    let start = start_naive.and_utc();
+    let end = end_naive.and_utc();
+
+    get_event_data(197, start, end)?;
 
     Ok(())
 }

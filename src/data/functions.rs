@@ -1,3 +1,4 @@
+use chrono::{prelude::{DateTime}, Utc};
 use reqwest::blocking::Client;
 use anyhow::Error;
 
@@ -5,14 +6,20 @@ use anyhow::Error;
 
 const BASE_URL: &str = "https://data.hisparc.nl/data/download/";
 
-pub fn get_event_data(station_number: u32) -> Result<(), Error> {
+pub fn get_event_data(station_number: u32, start: DateTime<Utc>, end: DateTime<Utc>) -> Result<(), Error> {
     let station_num_str = station_number.to_string();
+
+    let start_string: String = format!("{}", start.format("%Y-%m-%d %H:%M:%S"));
+    let end_string: String = format!("{}", end.format("%Y-%m-%d %H:%M:%S"));
+
+    println!("{}", start_string);
+    println!("{}", end_string);
 
     let query = vec![
         ("data_type", "events"),
         ("station_events", &station_num_str),
-        ("start", "2023-5-17 00:00:00"),
-        ("end", "2023-5-17 00:05:00")
+        ("start", &start_string),
+        ("end", &end_string)
     ];
 
     let client = Client::new();
