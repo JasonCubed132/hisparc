@@ -1,3 +1,4 @@
+use crate::data::structs::*;
 use anyhow::Error;
 use chrono::{prelude::DateTime, Utc};
 use reqwest::blocking::Client;
@@ -39,11 +40,12 @@ pub fn get_event_data(
         !t.starts_with('#')
     });
 
-    let parsed_lines_iter = filtered_lines_iter.map(|x| -> Vec<&str> { x.split('\t').collect() });
+    let parsed_lines_iter =
+        filtered_lines_iter.map(|x| -> Result<Event, Error> { Event::from_tsv(x) });
 
-    let parsed_lines: Vec<Vec<&str>> = parsed_lines_iter.collect();
+    let parsed_lines: Result<Vec<Event>, Error> = parsed_lines_iter.collect();
 
-    for line in parsed_lines {
+    for line in parsed_lines? {
         println!("{:#?}", line);
     }
 

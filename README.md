@@ -2,7 +2,7 @@
 This project is in its *very* early stages and is highly untested. Things implemented so far:
 
 - General API calls
-- Event data (still needs parsing)
+- Event data
 
 # API notes
 

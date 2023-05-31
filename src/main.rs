@@ -61,7 +61,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let start_naive = NaiveDateTime::parse_from_str("2023-5-17 00:00:00", "%Y-%m-%d %H:%M:%S")
         .context("Start")?;
     let end_naive =
-        NaiveDateTime::parse_from_str("2023-5-17 00:05:00", "%Y-%m-%d %H:%M:%S").context("End")?;
+        NaiveDateTime::parse_from_str("2023-5-17 00:01:00", "%Y-%m-%d %H:%M:%S").context("End")?;
 
     let start = start_naive.and_utc();
     let end = end_naive.and_utc();
