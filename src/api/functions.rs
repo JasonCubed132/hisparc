@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Result};
 use std::{collections::HashMap, fmt::Display};
-// use once_cell::sync::OnceCell;
+use once_cell::sync::OnceCell;
 use crate::api::structs::*;
 
 const BASE_URL: &str = "https://data.hisparc.nl/api/";
@@ -22,27 +22,22 @@ fn get_api_urls_internal() -> Result<HashMap<String, String>> {
     Ok(new_api_urls)
 }
 
-// lazy_static! {
-//     static ref API_URLS: Result<HashMap<String, String>, Error> = get_api_urls_internal();
-// }
+static API_URLS: OnceCell<Result<HashMap<String, String>>> = OnceCell::new();
 
-// pub fn get_api_urls() -> Result<HashMap<String, String>, Error> {
-//     match *API_URLS {
-//         Ok(c) => Ok(c.clone()),
-//         Err(e) => Err(e.clone())
-//     }
-// }
+pub fn get_api_url(key: &str) -> Result<&'static str> {
+    let data = API_URLS.get_or_init(|| {
+        get_api_urls_internal()
+    });
 
-// static API_URLS: OnceCell<Result<HashMap<String, String>, Error>> = OnceCell::new();
-
-// pub fn get_api_urls() -> &'static Result<HashMap<String, String>, Error> {
-//    API_URLS.get_or_init(|| {
-//     get_api_urls_internal()
-//    })
-// }
-
-pub fn get_api_urls() -> Result<HashMap<String, String>> {
-    get_api_urls_internal()
+    match data.as_ref() {
+        Ok(map) => {
+            match map.get(key) {
+                Some(a) => Ok(a),
+                None => Err(anyhow!("Key {} not found", key))
+            }
+        },
+        Err(e) => return Err(anyhow!(e.to_string()))
+    }
 }
 
 pub fn get_station_info(
@@ -58,7 +53,7 @@ pub fn get_station_info(
     substitions.insert("day".to_string(), day);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("station_info").unwrap(),
+        get_api_url("station_info")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<StationInfo>()?;
@@ -72,7 +67,7 @@ pub fn get_stations_with_data(year: u32, month: u32, day: u32) -> Result<Vec<Nam
     substitions.insert("day".to_string(), day);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("stations_with_data").unwrap(),
+        get_api_url("stations_with_data")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<Vec<NameNumber>>()?;
@@ -87,7 +82,7 @@ pub fn get_has_singles(station_number: u32, year: u32, month: u32, day: u32) -> 
     substitions.insert("day".to_string(), day);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("has_singles").unwrap(),
+        get_api_url("has_singles")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<bool>()?;
@@ -99,7 +94,7 @@ pub fn get_subclusters_in_cluster(cluster_number: u32) -> Result<Vec<NameNumber>
     substitions.insert("cluster_number".to_string(), cluster_number);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("subclusters_in_cluster").unwrap(),
+        get_api_url("subclusters_in_cluster")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<Vec<NameNumber>>()?;
@@ -119,7 +114,7 @@ pub fn get_configuration(
     substitions.insert("day".to_string(), day);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("configuration").unwrap(),
+        get_api_url("configuration")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<StationConfig>()?;
@@ -127,7 +122,7 @@ pub fn get_configuration(
 }
 
 pub fn get_clusters() -> Result<Vec<NameNumber>> {
-    let stations = reqwest::blocking::get(get_api_urls()?.get("clusters").unwrap())?
+    let stations = reqwest::blocking::get(get_api_url("clusters")?)?
         .json::<Vec<NameNumber>>()?;
     Ok(stations)
 }
@@ -147,7 +142,7 @@ pub fn get_number_of_events(
     substitions.insert("hour".to_string(), hour);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("number_of_events").unwrap(),
+        get_api_url("number_of_events")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<u32>()?;
@@ -162,7 +157,7 @@ pub fn get_has_weather(station_number: u32, year: u32, month: u32, day: u32) -> 
     substitions.insert("day".to_string(), day);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("has_weather").unwrap(),
+        get_api_url("has_weather")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<bool>()?;
@@ -177,7 +172,7 @@ pub fn get_has_data(station_number: u32, year: u32, month: u32, day: u32) -> Res
     substitions.insert("day".to_string(), day);
 
     let url =
-        substitute_variables_with_numbers(get_api_urls()?.get("has_data").unwrap(), substitions)?;
+        substitute_variables_with_numbers(get_api_url("has_data")?, substitions)?;
     let stations = reqwest::blocking::get(url)?.json::<bool>()?;
     Ok(stations)
 }
@@ -187,7 +182,7 @@ pub fn get_clusters_in_country(country_number: u32) -> Result<Vec<NameNumber>> {
     substitions.insert("country_number".to_string(), country_number);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("clusters_in_country").unwrap(),
+        get_api_url("clusters_in_country")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<Vec<NameNumber>>()?;
@@ -199,7 +194,7 @@ pub fn get_stations_in_subcluster(subcluster_number: u32) -> Result<Vec<NameNumb
     substitions.insert("subcluster_number".to_string(), subcluster_number);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("stations_in_subcluster").unwrap(),
+        get_api_url("stations_in_subcluster")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<Vec<NameNumber>>()?;
@@ -212,7 +207,7 @@ pub fn get_event_trace(station_number: u64, ext_timestamp: u64) -> Result<Vec<Ve
     substitions.insert("ext_timestamp".to_string(), ext_timestamp);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("event_trace").unwrap(),
+        get_api_url("event_trace")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<Vec<Vec<u32>>>()?;
@@ -220,13 +215,13 @@ pub fn get_event_trace(station_number: u64, ext_timestamp: u64) -> Result<Vec<Ve
 }
 
 pub fn get_stations() -> Result<Vec<NameNumber>> {
-    let stations = reqwest::blocking::get(get_api_urls()?.get("stations").unwrap())?
+    let stations = reqwest::blocking::get(get_api_url("stations")?)?
         .json::<Vec<NameNumber>>()?;
     Ok(stations)
 }
 
 pub fn get_countries() -> Result<Vec<NameNumber>> {
-    let stations = reqwest::blocking::get(get_api_urls()?.get("countries").unwrap())?
+    let stations = reqwest::blocking::get(get_api_url("countries")?)?
         .json::<Vec<NameNumber>>()?;
     Ok(stations)
 }
@@ -238,7 +233,7 @@ pub fn get_stations_with_weather(year: u32, month: u32, day: u32) -> Result<Vec<
     substitions.insert("day".to_string(), day);
 
     let url = substitute_variables_with_numbers(
-        get_api_urls()?.get("stations_with_weather").unwrap(),
+        get_api_url("stations_with_weather")?,
         substitions,
     )?;
     let stations = reqwest::blocking::get(url)?.json::<Vec<NameNumber>>()?;
@@ -246,7 +241,7 @@ pub fn get_stations_with_weather(year: u32, month: u32, day: u32) -> Result<Vec<
 }
 
 pub fn get_subclusters() -> Result<Vec<NameNumber>> {
-    let stations = reqwest::blocking::get(get_api_urls()?.get("subclusters").unwrap())?
+    let stations = reqwest::blocking::get(get_api_url("subclusters")?)?
         .json::<Vec<NameNumber>>()?;
     Ok(stations)
 }

@@ -4,12 +4,6 @@ use hisparc::api::*;
 use hisparc::data::*;
 
 fn main() -> Result<()> {
-    let api_urls = get_api_urls()?;
-
-    println!("{:#?}", api_urls);
-
-    // println!("{:#?}", api_urls.get("has_data").unwrap());
-
     let station_info = get_station_info(4, 2023, 5, 23)?;
     println!("{:#?}", station_info);
 
