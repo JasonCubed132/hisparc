@@ -1,7 +1,8 @@
 # A library / CLI intended for downloading and processing HiSPARC data
 This project is in its *very* early stages and is highly untested. Things implemented so far:
 
-- General API calls (so anything *but* event data)
+- General API calls
+- Event data (still needs parsing)
 
 # API notes
 
