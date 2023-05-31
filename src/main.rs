@@ -1,9 +1,9 @@
-use anyhow::Context;
+use anyhow::{Context, Result};
 use chrono::prelude::NaiveDateTime;
 use hisparc::api::*;
 use hisparc::data::*;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<()> {
     let api_urls = get_api_urls()?;
 
     println!("{:#?}", api_urls);
@@ -66,7 +66,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let start = start_naive.and_utc();
     let end = end_naive.and_utc();
 
-    get_event_data(197, start, end)?;
+    let events = get_event_data(197, start, end)?;
+
+    for event in events {
+        println!("{:#?}", event);
+    }
 
     Ok(())
 }

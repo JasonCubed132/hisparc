@@ -1,11 +1,11 @@
-use anyhow::Error;
+use anyhow::{anyhow, Result};
 use std::{collections::HashMap, fmt::Display};
 // use once_cell::sync::OnceCell;
 use crate::api::structs::*;
 
 const BASE_URL: &str = "https://data.hisparc.nl/api/";
 
-fn get_api_urls_internal() -> Result<HashMap<String, String>, Error> {
+fn get_api_urls_internal() -> Result<HashMap<String, String>> {
     let api_urls = reqwest::blocking::get(BASE_URL)?.json::<HashMap<String, String>>()?;
 
     let mut new_api_urls: HashMap<String, String> = HashMap::new();
@@ -41,7 +41,7 @@ fn get_api_urls_internal() -> Result<HashMap<String, String>, Error> {
 //    })
 // }
 
-pub fn get_api_urls() -> Result<HashMap<String, String>, Error> {
+pub fn get_api_urls() -> Result<HashMap<String, String>> {
     get_api_urls_internal()
 }
 
@@ -50,7 +50,7 @@ pub fn get_station_info(
     year: u32,
     month: u32,
     day: u32,
-) -> Result<StationInfo, Box<dyn std::error::Error>> {
+) -> Result<StationInfo> {
     let mut substitions = HashMap::new();
     substitions.insert("station_number".to_string(), station_number);
     substitions.insert("year".to_string(), year);
@@ -65,11 +65,7 @@ pub fn get_station_info(
     Ok(stations)
 }
 
-pub fn get_stations_with_data(
-    year: u32,
-    month: u32,
-    day: u32,
-) -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_stations_with_data(year: u32, month: u32, day: u32) -> Result<Vec<NameNumber>> {
     let mut substitions = HashMap::new();
     substitions.insert("year".to_string(), year);
     substitions.insert("month".to_string(), month);
@@ -83,12 +79,7 @@ pub fn get_stations_with_data(
     Ok(stations)
 }
 
-pub fn get_has_singles(
-    station_number: u32,
-    year: u32,
-    month: u32,
-    day: u32,
-) -> Result<bool, Box<dyn std::error::Error>> {
+pub fn get_has_singles(station_number: u32, year: u32, month: u32, day: u32) -> Result<bool> {
     let mut substitions = HashMap::new();
     substitions.insert("station_number".to_string(), station_number);
     substitions.insert("year".to_string(), year);
@@ -103,9 +94,7 @@ pub fn get_has_singles(
     Ok(stations)
 }
 
-pub fn get_subclusters_in_cluster(
-    cluster_number: u32,
-) -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_subclusters_in_cluster(cluster_number: u32) -> Result<Vec<NameNumber>> {
     let mut substitions = HashMap::new();
     substitions.insert("cluster_number".to_string(), cluster_number);
 
@@ -122,7 +111,7 @@ pub fn get_configuration(
     year: u32,
     month: u32,
     day: u32,
-) -> Result<StationConfig, Box<dyn std::error::Error>> {
+) -> Result<StationConfig> {
     let mut substitions = HashMap::new();
     substitions.insert("station_number".to_string(), station_number);
     substitions.insert("year".to_string(), year);
@@ -137,7 +126,7 @@ pub fn get_configuration(
     Ok(stations)
 }
 
-pub fn get_clusters() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_clusters() -> Result<Vec<NameNumber>> {
     let stations = reqwest::blocking::get(get_api_urls()?.get("clusters").unwrap())?
         .json::<Vec<NameNumber>>()?;
     Ok(stations)
@@ -149,7 +138,7 @@ pub fn get_number_of_events(
     month: u32,
     day: u32,
     hour: u32,
-) -> Result<u32, Box<dyn std::error::Error>> {
+) -> Result<u32> {
     let mut substitions = HashMap::new();
     substitions.insert("station_number".to_string(), station_number);
     substitions.insert("year".to_string(), year);
@@ -165,12 +154,7 @@ pub fn get_number_of_events(
     Ok(stations)
 }
 
-pub fn get_has_weather(
-    station_number: u32,
-    year: u32,
-    month: u32,
-    day: u32,
-) -> Result<bool, Box<dyn std::error::Error>> {
+pub fn get_has_weather(station_number: u32, year: u32, month: u32, day: u32) -> Result<bool> {
     let mut substitions = HashMap::new();
     substitions.insert("station_number".to_string(), station_number);
     substitions.insert("year".to_string(), year);
@@ -185,12 +169,7 @@ pub fn get_has_weather(
     Ok(stations)
 }
 
-pub fn get_has_data(
-    station_number: u32,
-    year: u32,
-    month: u32,
-    day: u32,
-) -> Result<bool, Box<dyn std::error::Error>> {
+pub fn get_has_data(station_number: u32, year: u32, month: u32, day: u32) -> Result<bool> {
     let mut substitions = HashMap::new();
     substitions.insert("station_number".to_string(), station_number);
     substitions.insert("year".to_string(), year);
@@ -203,9 +182,7 @@ pub fn get_has_data(
     Ok(stations)
 }
 
-pub fn get_clusters_in_country(
-    country_number: u32,
-) -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_clusters_in_country(country_number: u32) -> Result<Vec<NameNumber>> {
     let mut substitions = HashMap::new();
     substitions.insert("country_number".to_string(), country_number);
 
@@ -217,9 +194,7 @@ pub fn get_clusters_in_country(
     Ok(stations)
 }
 
-pub fn get_stations_in_subcluster(
-    subcluster_number: u32,
-) -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_stations_in_subcluster(subcluster_number: u32) -> Result<Vec<NameNumber>> {
     let mut substitions = HashMap::new();
     substitions.insert("subcluster_number".to_string(), subcluster_number);
 
@@ -231,10 +206,7 @@ pub fn get_stations_in_subcluster(
     Ok(stations)
 }
 
-pub fn get_event_trace(
-    station_number: u64,
-    ext_timestamp: u64,
-) -> Result<Vec<Vec<u32>>, Box<dyn std::error::Error>> {
+pub fn get_event_trace(station_number: u64, ext_timestamp: u64) -> Result<Vec<Vec<u32>>> {
     let mut substitions = HashMap::new();
     substitions.insert("station_number".to_string(), station_number);
     substitions.insert("ext_timestamp".to_string(), ext_timestamp);
@@ -247,23 +219,19 @@ pub fn get_event_trace(
     Ok(stations)
 }
 
-pub fn get_stations() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_stations() -> Result<Vec<NameNumber>> {
     let stations = reqwest::blocking::get(get_api_urls()?.get("stations").unwrap())?
         .json::<Vec<NameNumber>>()?;
     Ok(stations)
 }
 
-pub fn get_countries() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_countries() -> Result<Vec<NameNumber>> {
     let stations = reqwest::blocking::get(get_api_urls()?.get("countries").unwrap())?
         .json::<Vec<NameNumber>>()?;
     Ok(stations)
 }
 
-pub fn get_stations_with_weather(
-    year: u32,
-    month: u32,
-    day: u32,
-) -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_stations_with_weather(year: u32, month: u32, day: u32) -> Result<Vec<NameNumber>> {
     let mut substitions = HashMap::new();
     substitions.insert("year".to_string(), year);
     substitions.insert("month".to_string(), month);
@@ -277,7 +245,7 @@ pub fn get_stations_with_weather(
     Ok(stations)
 }
 
-pub fn get_subclusters() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> {
+pub fn get_subclusters() -> Result<Vec<NameNumber>> {
     let stations = reqwest::blocking::get(get_api_urls()?.get("subclusters").unwrap())?
         .json::<Vec<NameNumber>>()?;
     Ok(stations)
@@ -286,7 +254,7 @@ pub fn get_subclusters() -> Result<Vec<NameNumber>, Box<dyn std::error::Error>> 
 fn substitute_variables_with_numbers<T: Display>(
     input_str: &str,
     substitions: HashMap<String, T>,
-) -> Result<String, Box<dyn std::error::Error>> {
+) -> Result<String> {
     let split: Vec<&str> = input_str.split(|c| c == '{' || c == '}').collect();
 
     let mut output: Vec<String> = Vec::new();
@@ -299,7 +267,7 @@ fn substitute_variables_with_numbers<T: Display>(
                     let str_num = a.to_string();
                     output.push(str_num);
                 }
-                None => return Err(format!("Could not find {item} in substitutions").into()),
+                None => return Err(anyhow!("Could not find {item} in substitutions").into()),
             }
         }
     }

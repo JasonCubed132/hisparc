@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::str::FromStr;
 
-use anyhow::{anyhow, Context, Error};
+use anyhow::{anyhow, Context, Error, Result};
 use chrono::{DateTime, NaiveDate, NaiveDateTime, NaiveTime, Utc};
 
 #[derive(Debug)]
@@ -31,7 +31,7 @@ pub struct AxialCoord {
 }
 
 impl Event {
-    pub fn from_tsv(input: &str) -> Result<Self, Error> {
+    pub fn from_tsv(input: &str) -> Result<Self> {
         let split: Vec<&str> = input.split('\t').collect();
 
         // -1 if detector not present
@@ -126,7 +126,7 @@ impl Event {
     }
 }
 
-fn parse_list<T: FromStr>(input_vec: Vec<&str>) -> Result<Vec<Option<T>>, Error>
+fn parse_list<T: FromStr>(input_vec: Vec<&str>) -> Result<Vec<Option<T>>>
 where
     <T as FromStr>::Err: Send + Sync + std::error::Error + 'static,
 {
@@ -161,7 +161,7 @@ where
 
 fn map_list_of_four_to_detector_group<T: Clone + Debug>(
     input_vec: Vec<Option<T>>,
-) -> Result<DetectorDataGroup<T>, Error> {
+) -> Result<DetectorDataGroup<T>> {
     if input_vec.len() != 4 {
         Err(anyhow!("Input vector {:?} is not of length 4!", input_vec))
     } else {

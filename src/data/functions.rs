@@ -1,5 +1,5 @@
 use crate::data::structs::*;
-use anyhow::Error;
+use anyhow::Result;
 use chrono::{prelude::DateTime, Utc};
 use reqwest::blocking::Client;
 
@@ -11,7 +11,7 @@ pub fn get_event_data(
     station_number: u32,
     start: DateTime<Utc>,
     end: DateTime<Utc>,
-) -> Result<Vec<Event>, Error> {
+) -> Result<Vec<Event>> {
     let station_num_str = station_number.to_string();
 
     let start_string: String = format!("{}", start.format("%Y-%m-%d %H:%M:%S"));
@@ -40,10 +40,11 @@ pub fn get_event_data(
         !t.starts_with('#')
     });
 
-    let parsed_lines_iter =
-        filtered_lines_iter.map(|x| -> Result<Event, Error> { Event::from_tsv(x) });
+    let parsed_lines_iter = filtered_lines_iter.map(|x| -> Result<Event> { Event::from_tsv(x) });
 
-    let parsed_lines: Result<Vec<Event>, Error> = parsed_lines_iter.collect();
+    let parsed_lines: Result<Vec<Event>> = parsed_lines_iter.collect();
 
     parsed_lines
 }
+
+// https://data.hisparc.nl/data/4/weather/?download=True&start=2020-01-23+00%3A00%3A00&end=2020-01-23+00%3A05%3A00
