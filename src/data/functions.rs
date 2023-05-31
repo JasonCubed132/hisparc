@@ -11,7 +11,7 @@ pub fn get_event_data(
     station_number: u32,
     start: DateTime<Utc>,
     end: DateTime<Utc>,
-) -> Result<(), Error> {
+) -> Result<Vec<Event>, Error> {
     let station_num_str = station_number.to_string();
 
     let start_string: String = format!("{}", start.format("%Y-%m-%d %H:%M:%S"));
@@ -45,9 +45,5 @@ pub fn get_event_data(
 
     let parsed_lines: Result<Vec<Event>, Error> = parsed_lines_iter.collect();
 
-    for line in parsed_lines? {
-        println!("{:#?}", line);
-    }
-
-    Ok(())
+    parsed_lines
 }
